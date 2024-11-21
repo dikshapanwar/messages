@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 type ConnectionObject = {
   isConnected?: number;
 };
@@ -9,6 +10,14 @@ async function dbConnect(): Promise<void> {
     return;
   }
   try {
-    await mongoose.connect(process.env.MONGO_URI as string);
-  } catch (error) {}
+   const db= await mongoose.connect(process.env.MONGO_URI || "",{});
+   console.log(db)
+   connection.isConnected = db.connections[0].readyState;
+   console.log("Connected to MongoDB");
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
 }
+
+export default dbConnect;
